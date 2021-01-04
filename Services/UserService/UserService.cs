@@ -18,7 +18,8 @@ namespace TodoApi.Services.UserService
         }
 
         //return user if username exists
-        //returt null if username not exists or password is not correct
+        //return null if username not exists or password is not correct
+        //Note: user include: PasswordHash, PasswordSalt
         public User Authenticate(string username, string password)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
