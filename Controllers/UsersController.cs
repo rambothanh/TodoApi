@@ -1,17 +1,13 @@
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using TodoApi.Models;
 using TodoApi.Models.Helpers;
 using TodoApi.Models.UserModels;
@@ -19,6 +15,7 @@ using TodoApi.Services.UserService;
 
 namespace TodoApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -28,8 +25,7 @@ namespace TodoApi.Controllers
         private readonly IUserService _userService;
         private readonly AppSettings _appSettings;
 
-        
-        public UsersController(TodoContext context, IMapper mapper, 
+        public UsersController(TodoContext context, IMapper mapper,
         IUserService userService,
         IOptions<AppSettings> appSettings)
         {
@@ -42,7 +38,7 @@ namespace TodoApi.Controllers
         //POST: api/Users/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]AuthenticateModel model)
+        public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
             var user = _userService.Authenticate(model.Username, model.Password);
 
@@ -74,9 +70,8 @@ namespace TodoApi.Controllers
             });
         }
 
-
         // GET: api/Users
-        [Authorize]
+        
         [HttpGet]
         public IActionResult GetUsers()
         {
@@ -95,16 +90,15 @@ namespace TodoApi.Controllers
         }
 
         // PUT: api/Users/update/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("update/{id}")]
-        public IActionResult PutUser(int id, [FromBody]UpdateModel model)
+        public IActionResult PutUser(int id, [FromBody] UpdateModel model)
         {
-           // map model to entity and set id
+            // map model to entity and set id
             var user = _mapper.Map<User>(model);
             user.Id = id;
             try
             {
-                // update user 
+                // update user
                 _userService.Update(user, model.Password);
                 return Ok();
             }
@@ -115,11 +109,10 @@ namespace TodoApi.Controllers
             }
         }
 
-        
         //POST: api/Users/register
-        //[AllowAnonymous]
+        [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult Register([FromBody]RegisterModel model)
+        public IActionResult Register([FromBody] RegisterModel model)
         {
             // map model to entity
             var user = _mapper.Map<User>(model);
@@ -141,9 +134,8 @@ namespace TodoApi.Controllers
         [HttpDelete("delete/{id}")]
         public IActionResult DeleteUser(int id)
         {
-             _userService.Delete(id);
+            _userService.Delete(id);
             return Ok();
         }
-
     }
 }
