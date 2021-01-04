@@ -17,9 +17,25 @@ namespace TodoApi.Services.UserService
             _context = context;
         }
 
+        //return user if username exists
+        //returt null if username not exists or password is not correct
         public User Authenticate(string username, string password)
         {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                return null;
+
+            var user = _context.Users.SingleOrDefault(x => x.Username == username);
+
+            // check if username exists
+            if (user == null)
+                return null;
+
+            // check if password is correct
+            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+                return null;
+
+            // authentication successful
+            return user;
         }
 
         public User Create(User user, string password)
