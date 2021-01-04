@@ -38,7 +38,7 @@ namespace TodoApi
             }
             else
             {
-                //Sử dụng SQLite
+                //Sử dụng SQLite (để chắc ăn cần xóa Database và chạy Migration lại)
                 var connectionString = _configuration.GetConnectionString("LocalDataSQLite");
                 services.AddDbContext<TodoContext>(opt =>opt.UseSqlite(connectionString));
             }

@@ -23,8 +23,6 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
             #region Seed Data
-            //_context.Database.EnsureCreated();
-
             var todoItem = _context.TodoItems.FirstOrDefault(i => i.Id == 1 || i.Id == 2 || i.Id == 3 || i.Id == 4 || i.Id == 5);
             if (todoItem == null)
             {
