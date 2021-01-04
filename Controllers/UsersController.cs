@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
 using TodoApi.Models.UserModels;
+using TodoApi.Services.UserService;
 
 namespace TodoApi.Controllers
 {
@@ -17,11 +18,13 @@ namespace TodoApi.Controllers
     {
         private readonly TodoContext _context;
         private readonly IMapper _mapper;
+        private readonly UserService _userService;
 
-        public UsersController(TodoContext context, IMapper mapper)
+        public UsersController(TodoContext context, IMapper mapper, UserService userService)
         {
             _context = context;
             _mapper = mapper;
+            _userService = userService;
         }
 
         // GET: api/Users
@@ -86,6 +89,7 @@ namespace TodoApi.Controllers
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
+        
         
 
         // DELETE: api/Users/5
