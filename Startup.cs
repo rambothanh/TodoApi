@@ -29,7 +29,7 @@ namespace TodoApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if (_env.IsProduction())
+            if (_env.IsDevelopment())
             {
                 //Sử dụng Database trên bộ nhớ đệm
                 services.AddDbContext<TodoContext>(opt =>
