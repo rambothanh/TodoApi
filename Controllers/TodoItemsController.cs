@@ -26,6 +26,7 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
             #region Seed Data
+
             var todoItem = _context.TodoItems.FirstOrDefault(i => i.Id == 1 || i.Id == 2 || i.Id == 3 || i.Id == 4 || i.Id == 5);
             if (todoItem == null)
             {
@@ -36,7 +37,8 @@ namespace TodoApi.Controllers
                 _context.TodoItems.Add(new TodoItem { Id = 5, Name = "Name 5", IsComplete = false, Secret = "Secret 5" });
             }
             _context.SaveChanges();
-            #endregion
+
+            #endregion Seed Data
 
             return await _context.TodoItems
                                    .Select(x => ItemToDTO(x))

@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -33,7 +33,6 @@ namespace TodoApi.Controllers
             _mapper = mapper;
             _userService = userService;
             _appSettings = appSettings.Value;
-
         }
 
         //POST: api/Users/authenticate
@@ -41,6 +40,30 @@ namespace TodoApi.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
+            #region Seed user
+
+            RegisterModel adminUserSeed = new RegisterModel
+            {
+                FirstName = "Nguyễn",
+                LastName = "Thành",
+                Username = "admin",
+                Password = "admin",
+                Role = Role.Admin
+            };
+            RegisterModel userSeed = new RegisterModel
+            {
+                FirstName = "Nguyễn",
+                LastName = "Thành",
+                Username = "user",
+                Password = "string",
+                Role = Role.User
+            };
+
+            Register(adminUserSeed);
+            Register(userSeed);
+
+            #endregion Seed admin user
+
             var user = _userService.Authenticate(model.Username, model.Password);
 
             if (user == null)
@@ -73,7 +96,6 @@ namespace TodoApi.Controllers
         }
 
         // GET: api/Users
-        
         [HttpGet]
         public IActionResult GetUsers()
         {

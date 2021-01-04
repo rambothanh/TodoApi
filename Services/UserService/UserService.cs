@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +15,7 @@ namespace TodoApi.Services.UserService
         {
             _context = context;
         }
-        
-         
+
         //return user if username exists
         //return null if username not exists or password is not correct
         //Note: user include: PasswordHash, PasswordSalt
@@ -39,7 +37,7 @@ namespace TodoApi.Services.UserService
             // authentication successful
             return user;
         }
-        
+
         //Check password IsNullOrWhiteSpace
         //Check tra user.Username if exists
         //Create PasswordHash, PasswordSalt
@@ -86,7 +84,7 @@ namespace TodoApi.Services.UserService
         }
 
         //Lấy user ở database (user) từ id của user ở Param (userParam)
-        //Kiểm tra xem liệu userParam.Username IsNullOrWhiteSpace, 
+        //Kiểm tra xem liệu userParam.Username IsNullOrWhiteSpace,
         //và khác với user.Username không. Nếu khác, kiểm tra tiếp
         //userParam.Username này đã có trên database chưa, nếu chưa
         //update Username này cho user.
@@ -136,7 +134,7 @@ namespace TodoApi.Services.UserService
         //Tạo hai biến: passwordHash, và passwordSalt dạng byte[] rỗng cùng với chuỗi password
         //được người dùng gửi cho vào phương thức, phương thức sẽ kiểm tra
         //password đưa vào, nếu null hoặc có khoản trắng sẽ báo Exception
-        //Phương thước sẽ thay đổi 2 biến passwordHash, và passwordSalt 
+        //Phương thước sẽ thay đổi 2 biến passwordHash, và passwordSalt
         //dùng để trữ trên database cùng với các thông tin khác của User
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -148,13 +146,13 @@ namespace TodoApi.Services.UserService
                 //Lấy Key (được tạo ngẫu nhiên trong phương thức khởi tạo)
                 //cho vào passwordSalt để lưu Database
                 passwordSalt = hmac.Key;
-                //GetBytes tạo ra 1 mảng byte từ giá trị string đưa vào 
+                //GetBytes tạo ra 1 mảng byte từ giá trị string đưa vào
                 //ComputeHash sẽ Tính toán giá trị băm khi cho vào 1 mảng byte
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
 
-        //Cho vào phương thức 1 password dạng string, và một mảng byte storedHash 
+        //Cho vào phương thức 1 password dạng string, và một mảng byte storedHash
         //và storedSalt, 2 mảng này được lấy từ database. Phương thức sẽ tiến hành
         //Hash password đưa vào này với storedSalt, vào so sánh kết quả có khớp
         //với storedHash không.
