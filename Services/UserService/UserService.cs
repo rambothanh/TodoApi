@@ -67,17 +67,22 @@ namespace TodoApi.Services.UserService
 
         public void Delete(int id)
         {
-            throw new System.NotImplementedException();
+            var user = _context.Users.Find(id);
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+                _context.SaveChanges();
+            }
         }
 
         public IEnumerable<User> GetAll()
         {
-            throw new System.NotImplementedException();
+            return _context.Users;
         }
 
         public User GetById(int id)
         {
-            throw new System.NotImplementedException();
+            return _context.Users.Find(id);
         }
 
         public void Update(User user, string password = null)
