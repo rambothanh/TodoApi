@@ -15,7 +15,7 @@ using TodoApi.Services.UserService;
 
 namespace TodoApi.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = Role.Admin)]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -33,6 +33,7 @@ namespace TodoApi.Controllers
             _mapper = mapper;
             _userService = userService;
             _appSettings = appSettings.Value;
+
         }
 
         //POST: api/Users/authenticate
@@ -51,7 +52,8 @@ namespace TodoApi.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

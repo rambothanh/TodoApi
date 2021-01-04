@@ -16,7 +16,8 @@ namespace TodoApi.Services.UserService
         {
             _context = context;
         }
-
+        
+         
         //return user if username exists
         //return null if username not exists or password is not correct
         //Note: user include: PasswordHash, PasswordSalt
@@ -124,6 +125,9 @@ namespace TodoApi.Services.UserService
                 user.PasswordHash = passwordHash;
                 user.PasswordSalt = passwordSalt;
             }
+            // update Role if provided
+            if (!string.IsNullOrWhiteSpace(userParam.Role))
+                user.Role = userParam.Role;
 
             _context.Users.Update(user);
             _context.SaveChanges();

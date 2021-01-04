@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoApi.Models;
+using TodoApi.Models.UserModels;
 
 namespace TodoApi.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = Role.User + "," + Role.Admin)]
     [Route("api/[controller]")]
     [ApiController]
     public class TodoItemsController : ControllerBase
