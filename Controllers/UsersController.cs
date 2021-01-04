@@ -38,6 +38,7 @@ namespace TodoApi.Controllers
         }
 
         // GET: api/Users
+        [Authorize]
         [HttpGet]
         public IActionResult GetUsers()
         {
