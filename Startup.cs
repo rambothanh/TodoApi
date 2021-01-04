@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoApi.Models;
+using TodoApi.Models.Helpers;
 using TodoApi.Services.UserService;
 
 namespace TodoApi
@@ -60,6 +61,12 @@ namespace TodoApi
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
+
+            //configure các đối tượng được gõ trong file AppSettings.json/AppSettings
+            var appSettingsSection = _configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -24,23 +24,20 @@ namespace TodoApi.Controllers
         private readonly TodoContext _context;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
+        private readonly AppSettings _appSettings;
 
         
         public UsersController(TodoContext context, IMapper mapper, 
-        IUserService userService)
+        IUserService userService,
+        IOptions<AppSettings> appSettings)
         {
             _context = context;
             _mapper = mapper;
             _userService = userService;
+            _appSettings = appSettings.Value;
         }
 
         // GET: api/Users
-        // [HttpGet]
-        // public async Task<ActionResult<IEnumerable<User>>> GetUsers()
-        // {
-        //     return await _context.Users.ToListAsync();
-        // }
-
         [HttpGet]
         public IActionResult GetUsers()
         {
@@ -58,9 +55,9 @@ namespace TodoApi.Controllers
             return Ok(model);
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Users/update/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public IActionResult PutUser(int id, [FromBody]UpdateModel model)
         {
            // map model to entity and set id
@@ -80,7 +77,7 @@ namespace TodoApi.Controllers
         }
 
         
-        //POST: api/Users
+        //POST: api/Users/register
         //[AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register([FromBody]RegisterModel model)
@@ -101,17 +98,13 @@ namespace TodoApi.Controllers
             }
         }
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
+        // DELETE: api/Users/delete/5
+        [HttpDelete("delete/{id}")]
         public IActionResult DeleteUser(int id)
         {
              _userService.Delete(id);
             return Ok();
         }
 
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
     }
 }
