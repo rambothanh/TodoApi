@@ -5,7 +5,6 @@ using System.Linq;
 using TodoApi.Models;
 using TodoApi.Models.Helpers;
 using TodoApi.Models.UserModels;
-using TodoApi.Services.UserService;
 
 namespace TodoApi.Services.UserService
 {
@@ -85,9 +84,49 @@ namespace TodoApi.Services.UserService
             return _context.Users.Find(id);
         }
 
-        public void Update(User user, string password = null)
+        //Lấy user ở database (user) từ id của user ở Param (userParam)
+        //Kiểm tra xem liệu userParam.Username IsNullOrWhiteSpace, 
+        //và khác với user.Username không. Nếu khác, kiểm tra tiếp
+        //userParam.Username này đã có trên database chưa, nếu chưa
+        //update Username này cho user.
+        //Xong kiểm tra IsNullOrWhiteSpace cho các properties khác
+        //và update chúng vào user.
+        public void Update(User userParam, string password = null)
         {
-            throw new System.NotImplementedException();
+            var user = _context.Users.Find(userParam.Id);
+
+            if (user == null)
+                throw new AppException("User not found");
+
+            // update username if it has changed
+            if (!string.IsNullOrWhiteSpace(userParam.Username) && userParam.Username != user.Username)
+            {
+                // throw error if the new username is already taken
+                if (_context.Users.Any(x => x.Username == userParam.Username))
+                    throw new AppException("Username " + userParam.Username + " is already taken");
+
+                user.Username = userParam.Username;
+            }
+
+            // update user properties if provided
+            if (!string.IsNullOrWhiteSpace(userParam.FirstName))
+                user.FirstName = userParam.FirstName;
+
+            if (!string.IsNullOrWhiteSpace(userParam.LastName))
+                user.LastName = userParam.LastName;
+
+            // update password if provided
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                byte[] passwordHash, passwordSalt;
+                CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+            }
+
+            _context.Users.Update(user);
+            _context.SaveChanges();
         }
 
         //Tạo hai biến: passwordHash, và passwordSalt dạng byte[] rỗng cùng với chuỗi password
