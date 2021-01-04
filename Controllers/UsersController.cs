@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using TodoApi.Models;
 using TodoApi.Models.Helpers;
 using TodoApi.Models.UserModels;
@@ -20,9 +23,11 @@ namespace TodoApi.Controllers
     {
         private readonly TodoContext _context;
         private readonly IMapper _mapper;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public UsersController(TodoContext context, IMapper mapper, UserService userService)
+        
+        public UsersController(TodoContext context, IMapper mapper, 
+        IUserService userService)
         {
             _context = context;
             _mapper = mapper;
@@ -30,69 +35,53 @@ namespace TodoApi.Controllers
         }
 
         // GET: api/Users
+        // [HttpGet]
+        // public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        // {
+        //     return await _context.Users.ToListAsync();
+        // }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public IActionResult GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = _userService.GetAll();
+            var model = _mapper.Map<IList<UserModel>>(users);
+            return Ok(model);
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public IActionResult GetUserById(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return user;
+            var user = _userService.GetById(id);
+            var model = _mapper.Map<UserModel>(user);
+            return Ok(model);
         }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public IActionResult PutUser(int id, [FromBody]UpdateModel model)
         {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
+           // map model to entity and set id
+            var user = _mapper.Map<User>(model);
+            user.Id = id;
             try
             {
-                await _context.SaveChangesAsync();
+                // update user 
+                _userService.Update(user, model.Password);
+                return Ok();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (AppException ex)
             {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                // return error message if there was an exception
+                return BadRequest(new { message = ex.Message });
             }
-
-            return NoContent();
         }
 
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPost]
-        // public async Task<ActionResult<User>> PostUser(User user)
-        // {
-        //     _context.Users.Add(user);
-        //     await _context.SaveChangesAsync();
-
-        //     return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        // }
         
-        [AllowAnonymous]
+        //POST: api/Users
+        //[AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register([FromBody]RegisterModel model)
         {
@@ -111,23 +100,13 @@ namespace TodoApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        
-        
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public IActionResult DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+             _userService.Delete(id);
+            return Ok();
         }
 
         private bool UserExists(int id)
