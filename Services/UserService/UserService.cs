@@ -67,5 +67,28 @@ namespace TodoApi.Services.UserService
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
+
+        //Cho vào phương thức 1 password dạng string, và một mảng byte storedHash 
+        //và storedSalt, 2 mảng này được lấy từ database. Phương thức sẽ tiến hành
+        //Hash password đưa vào này với storedSalt, vào so sánh kết quả có khớp
+        //với storedHash không.
+        private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
+        {
+            if (password == null) throw new ArgumentNullException("password");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+            if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
+            if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
+            //Khởi tạo instance mới của lớp HMACSHA512 với Key = storedSalt đưa vào.
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
+            {
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                for (int i = 0; i < computedHash.Length; i++)
+                {
+                    if (computedHash[i] != storedHash[i]) return false;
+                }
+            }
+
+            return true;
+        }
     }
 }
