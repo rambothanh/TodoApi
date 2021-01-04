@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TodoApi.Models;
+using TodoApi.Models.Helpers;
 using TodoApi.Models.UserModels;
 using TodoApi.Services.UserService;
 
@@ -38,10 +39,30 @@ namespace TodoApi.Services.UserService
             // authentication successful
             return user;
         }
-
+        
+        //Check password IsNullOrWhiteSpace
+        //Check tra user.Username if exists
+        //Create PasswordHash, PasswordSalt
+        //Save user in database
         public User Create(User user, string password)
         {
-            throw new System.NotImplementedException();
+            // validation
+            if (string.IsNullOrWhiteSpace(password))
+                throw new AppException("Password is required");
+
+            if (_context.Users.Any(x => x.Username == user.Username))
+                throw new AppException("Username \"" + user.Username + "\" is already taken");
+
+            byte[] passwordHash, passwordSalt;
+            CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            return user;
         }
 
         public void Delete(int id)
