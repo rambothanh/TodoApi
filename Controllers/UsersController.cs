@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
+using TodoApi.Models.Helpers;
 using TodoApi.Models.UserModels;
 using TodoApi.Services.UserService;
 
@@ -81,13 +83,33 @@ namespace TodoApi.Controllers
 
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+        // [HttpPost]
+        // public async Task<ActionResult<User>> PostUser(User user)
+        // {
+        //     _context.Users.Add(user);
+        //     await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+        //     return CreatedAtAction("GetUser", new { id = user.Id }, user);
+        // }
+        
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public IActionResult Register([FromBody]RegisterModel model)
+        {
+            // map model to entity
+            var user = _mapper.Map<User>(model);
+
+            try
+            {
+                // create user
+                _userService.Create(user, model.Password);
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(new { message = ex.Message });
+            }
         }
         
         

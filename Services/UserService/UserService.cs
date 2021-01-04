@@ -59,7 +59,7 @@ namespace TodoApi.Services.UserService
             user.PasswordSalt = passwordSalt;
 
             _context.Users.Add(user);
-            _context.SaveChanges();
+            _context.SaveChangesAsync();
 
             return user;
         }
