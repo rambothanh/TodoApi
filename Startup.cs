@@ -145,12 +145,15 @@ namespace TodoApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            //Mục đích để test Deploy lên Ubtuntu, 
+            //Dự án thực không cần để lung tung như vầy
+            if (env.IsDevelopment() || env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TodoApi v1"));
             }
+            
             //xóa cái này để test Deploy
             //app.UseHttpsRedirection();
 
@@ -169,6 +172,7 @@ namespace TodoApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                
             });
 
             ///
