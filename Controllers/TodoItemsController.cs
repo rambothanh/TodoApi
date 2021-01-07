@@ -10,7 +10,7 @@ using TodoApi.Models.UserModels;
 namespace TodoApi.Controllers
 {
     //Comment chỗ này để test client
-    //[Authorize(Roles = Role.User + "," + Role.Admin)]
+    [Authorize(Roles = Role.User + "," + Role.Admin)]
     [Route("api/[controller]")]
     [ApiController]
     public class TodoItemsController : ControllerBase
