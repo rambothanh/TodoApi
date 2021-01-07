@@ -22,6 +22,8 @@ namespace TodoApi.Controllers
         }
 
         // GET: api/TodoItems
+        //Thêm [AllowAnonymous] mục đích để test Client
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
