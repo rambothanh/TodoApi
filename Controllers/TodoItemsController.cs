@@ -9,7 +9,8 @@ using TodoApi.Models.UserModels;
 
 namespace TodoApi.Controllers
 {
-    [Authorize(Roles = Role.User + "," + Role.Admin)]
+    //Comment chỗ này để test client
+    //[Authorize(Roles = Role.User + "," + Role.Admin)]
     [Route("api/[controller]")]
     [ApiController]
     public class TodoItemsController : ControllerBase
@@ -23,7 +24,7 @@ namespace TodoApi.Controllers
 
         // GET: api/TodoItems
         //Thêm [AllowAnonymous] mục đích để test Client
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
