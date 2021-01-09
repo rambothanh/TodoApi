@@ -35,29 +35,31 @@ namespace TodoApi.Controllers
             _appSettings = appSettings.Value;
             SeedAdmin();
         }
-        private void SeedAdmin(){
+
+        private void SeedAdmin()
+        {
             //Cập nhật Id 1 luôn là Admin ka ka
-            
+
             RegisterModel userSeed = new RegisterModel
-                {
-                    FirstName = "Thành",
-                    LastName = "Nguyễn Trọng",
-                    Username = "admin",
-                    Password = "string",
-                };
-                //Đăng ký bất kể tồn tại chưa
-                Register(userSeed);
-                //Tạo UpdateModel update
-                 UpdateModel adminUserSeed = new UpdateModel
-                    { 
-                        FirstName = "Thành",
-                        LastName = "Nguyễn Trọng",
-                        Username = "admin",
-                        Password = "string",
-                        Role = Role.Admin
-                    };
-                //Update cho số 1
-                PutUser(1, adminUserSeed);
+            {
+                FirstName = "Thành",
+                LastName = "Nguyễn Trọng",
+                Username = "admin",
+                Password = "string",
+            };
+            //Đăng ký bất kể tồn tại chưa
+            Register(userSeed);
+            //Tạo UpdateModel update
+            UpdateModel adminUserSeed = new UpdateModel
+            {
+                FirstName = "Thành",
+                LastName = "Nguyễn Trọng",
+                Username = "admin",
+                Password = "string",
+                Role = Role.Admin
+            };
+            //Update cho số 1
+            PutUser(1, adminUserSeed);
         }
 
         //POST: api/Users/authenticate
@@ -65,8 +67,6 @@ namespace TodoApi.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
-           
-
             var user = _userService.Authenticate(model.Username, model.Password);
 
             if (user == null)

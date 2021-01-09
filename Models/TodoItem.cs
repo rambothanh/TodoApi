@@ -10,7 +10,7 @@ namespace TodoApi.Models
     public class TodoItem
     {
         public long Id { get; set; }
-        public DateTime? DateCreate {get;set;} = DateTime.UtcNow;
+        public DateTime? DateCreate {get;set;} = DateTime.UtcNow.AddHours(7);
         public DateTime? DateDue {get;set;}
         public string Name { get; set; }
         public bool IsComplete { get; set; }

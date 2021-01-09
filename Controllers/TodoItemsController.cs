@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 using TodoApi.Models;
-using TodoApi.Models.Helpers;
 using TodoApi.Models.UserModels;
-using AutoMapper;
-
 
 namespace TodoApi.Controllers
 {
@@ -20,47 +18,48 @@ namespace TodoApi.Controllers
     public class TodoItemsController : ControllerBase
     {
         private readonly TodoContext _context;
-        //Nhầm ở chỗ này, nhớ để interface chỗ này và chỗ para 
+
+        //Nhầm ở chỗ này, nhớ để interface chỗ này và chỗ para
         //của Contructor
         private readonly IMapper _mapper;
-        
+
         public TodoItemsController(TodoContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            
         }
+
         //GetUserId
         // Trong ControllerBase có thuộc tính User chính là User đang
-         // được xác thực. Lấy Id của User này bằng Claims.First
-         // chính là Claim.Type.Name được cấu hình ở UserController.cs
+        // được xác thực. Lấy Id của User này bằng Claims.First
+        // chính là Claim.Type.Name được cấu hình ở UserController.cs
         private int GetUserId()
         {
             return Int16.Parse(User.Claims.First().Value);
         }
-        
+
         // GET: api/TodoItems
-        //Thêm [AllowAnonymous] mục đích để test Client
-        //[AllowAnonymous]
+        // [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
             #region Seed Data
 
-            var todoItem = _context.TodoItems.FirstOrDefault(i => i.Id == 1 || i.Id == 2 || i.Id == 3 || i.Id == 4 || i.Id == 5);
-            if (todoItem == null)
-            {
-                _context.TodoItems.Add(new TodoItem { Id = 1, Name = "Name 1", IsComplete = false });
-                _context.TodoItems.Add(new TodoItem { Id = 2, Name = "Name 2", IsComplete = true });
-                _context.TodoItems.Add(new TodoItem { Id = 3, Name = "Name 3", IsComplete = false });
-                _context.TodoItems.Add(new TodoItem { Id = 4, Name = "Name 4", IsComplete = true });
-                _context.TodoItems.Add(new TodoItem { Id = 5, Name = "Name 5", IsComplete = false});
-            }
-            _context.SaveChanges();
+            //var todoItem = _context.TodoItems.FirstOrDefault(i => i.Id == 1 || i.Id == 2 || i.Id == 3 || i.Id == 4 || i.Id == 5);
+            //if (todoItem == null)
+            //{
+            //    _context.TodoItems.Add(new TodoItem { Id = 1, Name = "Name 1", IsComplete = false });
+            //    _context.TodoItems.Add(new TodoItem { Id = 2, Name = "Name 2", IsComplete = true });
+            //    _context.TodoItems.Add(new TodoItem { Id = 3, Name = "Name 3", IsComplete = false });
+            //    _context.TodoItems.Add(new TodoItem { Id = 4, Name = "Name 4", IsComplete = true });
+            //    _context.TodoItems.Add(new TodoItem { Id = 5, Name = "Name 5", IsComplete = false});
+            //}
+            //_context.SaveChanges();
 
             #endregion Seed Data
-            return await _context.TodoItems.Where(x=>x.UserRefId==GetUserId())
-                                    .Select(x=> _mapper.Map<TodoItemDTO>(x))
+
+            return await _context.TodoItems.Where(x => x.UserRefId == GetUserId())
+                                    .Select(x => _mapper.Map<TodoItemDTO>(x))
                                     .ToListAsync();
         }
 
@@ -68,7 +67,7 @@ namespace TodoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.Where(x=>x.UserRefId == GetUserId() && x.Id==id).FirstAsync();
+            var todoItem = await _context.TodoItems.Where(x => x.UserRefId == GetUserId() && x.Id == id).FirstAsync();
 
             if (todoItem == null)
             {
@@ -79,39 +78,48 @@ namespace TodoApi.Controllers
         }
 
         // PUT: api/TodoItems/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(long id, TodoItemDTO todoItemDTO)
         {
             if (id != todoItemDTO.Id)
             {
-                return BadRequest();
+                return BadRequest(new { message = "Wrong id" });
             }
+            var todoItemParam = _mapper.Map<TodoItem>(todoItemDTO);
+            todoItemParam.Id = id;
             //Tìm todoItem theo id yêu cầu
-            var todoItem = await _context.TodoItems.Where(x=>x.UserRefId == GetUserId() && x.Id==id).FirstAsync();
+            var todoItem = await _context.TodoItems.Where(x => x.UserRefId == GetUserId() && x.Id == id).FirstAsync();
             if (todoItem == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Not found" });
             }
             //Cập nhật data mới
-            todoItem.Name = todoItemDTO.Name;
-            todoItem.IsComplete = todoItemDTO.IsComplete;
-            todoItem.DateDue = todoItemDTO.DateDue;
+            if (!string.IsNullOrWhiteSpace(todoItemParam.Name))
+            {
+                todoItem.Name = todoItemParam.Name;
+            }
+            if (!string.IsNullOrWhiteSpace(todoItemParam.IsComplete.ToString()))
+            {
+                todoItem.IsComplete = todoItemParam.IsComplete;
+            }
 
-            try
+            if (!string.IsNullOrWhiteSpace(todoItemParam.DateDue.ToString()))
             {
-                await _context.SaveChangesAsync();
+                todoItem.DateDue = todoItemParam.DateDue;
             }
-            catch (DbUpdateConcurrencyException) when (!TodoItemExists(id))
+            if (!string.IsNullOrWhiteSpace(todoItemParam.DateDue.ToString()))
             {
-                return NotFound();
+                todoItem.DateCreate = todoItemParam.DateCreate;
             }
+
+            _context.TodoItems.Update(todoItem);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/TodoItems
-        
+
         [HttpPost]
         public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItemDTO todoItemDTO)
         {
@@ -137,11 +145,10 @@ namespace TodoApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoItem(long id)
         {
-
-            var todoItem = await _context.TodoItems.Where(x=>x.UserRefId == GetUserId() && x.Id==id).FirstAsync();
+            var todoItem = await _context.TodoItems.Where(x => x.UserRefId == GetUserId() && x.Id == id).FirstAsync();
             if (todoItem == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Not found" });
             }
 
             _context.TodoItems.Remove(todoItem);
@@ -150,7 +157,7 @@ namespace TodoApi.Controllers
             return NoContent();
         }
 
-        //Dùng để bắt lỗi trong PutTodo
+        //Dùng để bắt lỗi
         private bool TodoItemExists(long id)
         {
             return _context.TodoItems.Any(e => e.Id == id);
