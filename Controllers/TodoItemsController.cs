@@ -34,10 +34,10 @@ namespace TodoApi.Controllers
             if (todoItem == null)
             {
                 _context.TodoItems.Add(new TodoItem { Id = 1, Name = "Name 1", IsComplete = false });
-                _context.TodoItems.Add(new TodoItem { Id = 2, Name = "Name 2", IsComplete = true, Secret = "Secret 2" });
-                _context.TodoItems.Add(new TodoItem { Id = 3, Name = "Name 3", IsComplete = false, Secret = "Secret 3" });
-                _context.TodoItems.Add(new TodoItem { Id = 4, Name = "Name 4", IsComplete = true, Secret = "Secret 4" });
-                _context.TodoItems.Add(new TodoItem { Id = 5, Name = "Name 5", IsComplete = false, Secret = "Secret 5" });
+                _context.TodoItems.Add(new TodoItem { Id = 2, Name = "Name 2", IsComplete = true });
+                _context.TodoItems.Add(new TodoItem { Id = 3, Name = "Name 3", IsComplete = false });
+                _context.TodoItems.Add(new TodoItem { Id = 4, Name = "Name 4", IsComplete = true });
+                _context.TodoItems.Add(new TodoItem { Id = 5, Name = "Name 5", IsComplete = false});
             }
             _context.SaveChanges();
 

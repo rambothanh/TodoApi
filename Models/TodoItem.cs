@@ -13,7 +13,7 @@ namespace TodoApi.Models
         public string Name { get; set; }
         public bool IsComplete { get; set; }
         [ForeignKey("User")]
-        public int UserRefId { get; set; }
+        public int UserRefId { get; set; } =1;
         public User User { get; set; }
         
     }
