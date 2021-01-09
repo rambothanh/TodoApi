@@ -68,7 +68,7 @@ namespace TodoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var todoItem = await _context.TodoItems.Where(x=>x.UserRefId == GetUserId() && x.Id==id).FirstAsync();
 
             if (todoItem == null)
             {
@@ -88,7 +88,7 @@ namespace TodoApi.Controllers
                 return BadRequest();
             }
             //Tìm todoItem theo id yêu cầu
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var todoItem = await _context.TodoItems.Where(x=>x.UserRefId == GetUserId() && x.Id==id).FirstAsync();
             if (todoItem == null)
             {
                 return NotFound();
@@ -121,8 +121,8 @@ namespace TodoApi.Controllers
             //     Name = todoItemDTO.Name
             // };
             var todoItem = _mapper.Map<TodoItem>(todoItemDTO);
-            // Lấy id của User hiện tại:
-
+            // Lấy id của User hiện tại cho vào todoItem
+            todoItem.UserRefId = GetUserId();
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
 
@@ -136,7 +136,8 @@ namespace TodoApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+
+            var todoItem = await _context.TodoItems.Where(x=>x.UserRefId == GetUserId() && x.Id==id).FirstAsync();
             if (todoItem == null)
             {
                 return NotFound();
@@ -148,6 +149,7 @@ namespace TodoApi.Controllers
             return NoContent();
         }
 
+        //Dùng để bắt lỗi trong PutTodo
         private bool TodoItemExists(long id)
         {
             return _context.TodoItems.Any(e => e.Id == id);
