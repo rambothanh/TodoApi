@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using TodoApi.Models;
+using System.Collections.Generic;
 
 
 namespace TodoApi.Models.UserModels {
@@ -12,6 +13,6 @@ namespace TodoApi.Models.UserModels {
         public string Role { get; set; } = TodoApi.Models.UserModels.Role.User;
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-        //public ICollection<TodoApi.Models.TodoItem>  TodoItems { get; set; }
+        public ICollection<TodoApi.Models.TodoItem>  TodoItems { get; set; }
     }
 }
