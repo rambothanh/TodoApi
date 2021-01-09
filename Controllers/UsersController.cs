@@ -33,9 +33,11 @@ namespace TodoApi.Controllers
             _mapper = mapper;
             _userService = userService;
             _appSettings = appSettings.Value;
+            SeedAdmin();
         }
         private void SeedAdmin(){
             //Cập nhật Id 1 luôn là Admin ka ka
+            
             RegisterModel userSeed = new RegisterModel
                 {
                     FirstName = "Thành",
@@ -43,20 +45,9 @@ namespace TodoApi.Controllers
                     Username = "admin",
                     Password = "string",
                 };
-            var user = GetUserById(1);
-            
-            if(user==null){
-                //Đăng ký User bình thường
+                //Đăng ký bất kể tồn tại chưa
                 Register(userSeed);
-                //Tạo UpdateModel để Set Role Admin
-                UpdateModel adminUserSeed = new UpdateModel
-                    {
-                        Role = Role.Admin
-                    };
-                //Set Role admin cho User 1
-                PutUser(1, adminUserSeed);
-            }else{
-                //Tạo UpdateModel mới để đè lên số 1
+                //Tạo UpdateModel update
                  UpdateModel adminUserSeed = new UpdateModel
                     { 
                         FirstName = "Thành",
@@ -65,9 +56,8 @@ namespace TodoApi.Controllers
                         Password = "string",
                         Role = Role.Admin
                     };
-                //Update lên mọi số 1:
+                //Update cho số 1
                 PutUser(1, adminUserSeed);
-            }
         }
 
         //POST: api/Users/authenticate
@@ -75,7 +65,7 @@ namespace TodoApi.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
-            SeedAdmin();
+           
 
             var user = _userService.Authenticate(model.Username, model.Password);
 
@@ -153,7 +143,7 @@ namespace TodoApi.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterModel model)
         {
-            SeedAdmin();
+            //SeedAdmin();
             // map model to entity
             var user = _mapper.Map<User>(model);
 
