@@ -42,25 +42,23 @@ namespace TodoApi.Controllers
         {
             #region Seed user
 
-            RegisterModel adminUserSeed = new RegisterModel
-            {
-                FirstName = "Nguyễn",
-                LastName = "Thành",
-                Username = "admin",
-                Password = "admin",
-                Role = Role.Admin
-            };
+           
             RegisterModel userSeed = new RegisterModel
             {
-                FirstName = "Nguyễn",
-                LastName = "Thành",
-                Username = "user",
+                FirstName = "Thành",
+                LastName = "Nguyễn Trọng",
+                Username = "admin",
                 Password = "string",
-                Role = Role.User
             };
 
-            Register(adminUserSeed);
+            UpdateModel adminUserSeed = new UpdateModel
+            {
+                Role = Role.Admin
+            };
+            
             Register(userSeed);
+            // Set dmin
+            PutUser(1,adminUserSeed);
 
             #endregion Seed admin user
 
@@ -114,6 +112,8 @@ namespace TodoApi.Controllers
         }
 
         // PUT: api/Users/update/5
+        // Dùng cho Admin vừa setRole vừa update các nội dung khác
+        // Update dành cho User sẽ update sau
         [HttpPut("update/{id}")]
         public IActionResult PutUser(int id, [FromBody] UpdateModel model)
         {
@@ -123,7 +123,7 @@ namespace TodoApi.Controllers
             try
             {
                 // update user
-                _userService.Update(user, model.Password);
+                _userService.SetRoleAndUpdate(user, model.Password);
                 return Ok();
             }
             catch (AppException ex)

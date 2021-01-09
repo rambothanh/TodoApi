@@ -124,8 +124,8 @@ namespace TodoApi.Services.UserService
                 user.PasswordSalt = passwordSalt;
             }
             // update Role if provided
-            if (!string.IsNullOrWhiteSpace(userParam.Role))
-                user.Role = userParam.Role;
+            // if (!string.IsNullOrWhiteSpace(userParam.Role))
+            //     user.Role = userParam.Role;
 
             _context.Users.Update(user);
             _context.SaveChanges();
@@ -173,6 +173,48 @@ namespace TodoApi.Services.UserService
             }
 
             return true;
+        }
+
+        //Phương thức này dùng cho admin, vừa setRole vừa chỉnh sửa khác nếu cần.
+        public void SetRoleAndUpdate(User userParam,string password = null)
+        {
+           var user = _context.Users.Find(userParam.Id);
+
+            if (user == null)
+                throw new AppException("User not found");
+
+            // update username if it has changed
+            if (!string.IsNullOrWhiteSpace(userParam.Username) && userParam.Username != user.Username)
+            {
+                // throw error if the new username is already taken
+                if (_context.Users.Any(x => x.Username == userParam.Username))
+                    throw new AppException("Username " + userParam.Username + " is already taken");
+
+                user.Username = userParam.Username;
+            }
+
+            // update user properties if provided
+            if (!string.IsNullOrWhiteSpace(userParam.FirstName))
+                user.FirstName = userParam.FirstName;
+
+            if (!string.IsNullOrWhiteSpace(userParam.LastName))
+                user.LastName = userParam.LastName;
+
+            // update password if provided
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                byte[] passwordHash, passwordSalt;
+                CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+            }
+            //update Role if provided
+            if (!string.IsNullOrWhiteSpace(userParam.Role))
+                user.Role = userParam.Role;
+
+            _context.Users.Update(user);
+            _context.SaveChanges();
         }
     }
 }

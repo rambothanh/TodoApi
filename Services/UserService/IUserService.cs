@@ -14,6 +14,7 @@ namespace TodoApi.Services.UserService
         User Create(User user, string password);
 
         void Update(User user, string password = null);
+        void SetRoleAndUpdate(User user,string password = null);
 
         void Delete(int id);
     }
