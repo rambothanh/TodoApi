@@ -10,6 +10,8 @@ namespace TodoApi.Models.Helpers
             CreateMap<User, UserModel>();
             CreateMap<RegisterModel, User>();
             CreateMap<UpdateModel, User>();
+            CreateMap<TodoItem, TodoItemDTO>();
+             CreateMap<TodoItemDTO, TodoItem>();
         }
     }
 }

@@ -1,10 +1,12 @@
 using System.Collections.Generic;
-using TodoApi.Models.UserModels;
+using System.Threading.Tasks;
+using TodoApi.Models;
 
 namespace TodoApi.Services.TodoService
 {
     public interface ITodoService
     {
+        IEnumerable<TodoItem> GetAllTodoItemsOfUser();
         // User Authenticate(string username, string password);
 
         // IEnumerable<User> GetAll();

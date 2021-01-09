@@ -4,8 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 using TodoApi.Models;
+using TodoApi.Models.Helpers;
 using TodoApi.Models.UserModels;
+using AutoMapper;
+
 
 namespace TodoApi.Controllers
 {
@@ -16,12 +20,25 @@ namespace TodoApi.Controllers
     public class TodoItemsController : ControllerBase
     {
         private readonly TodoContext _context;
-
-        public TodoItemsController(TodoContext context)
+        //Nhầm ở chỗ này, nhớ để interface chỗ này và chỗ para 
+        //của Contructor
+        private readonly IMapper _mapper;
+        
+        public TodoItemsController(TodoContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
+            
         }
-
+        //GetUserId
+        // Trong ControllerBase có thuộc tính User chính là User đang
+         // được xác thực. Lấy Id của User này bằng Claims.First
+         // chính là Claim.Type.Name được cấu hình ở UserController.cs
+        private int GetUserId()
+        {
+            return Int16.Parse(User.Claims.First().Value);
+        }
+        
         // GET: api/TodoItems
         //Thêm [AllowAnonymous] mục đích để test Client
         //[AllowAnonymous]
@@ -42,10 +59,9 @@ namespace TodoApi.Controllers
             _context.SaveChanges();
 
             #endregion Seed Data
-
-            return await _context.TodoItems
-                                   .Select(x => ItemToDTO(x))
-                                   .ToListAsync();
+            return await _context.TodoItems.Where(x=>x.UserRefId==GetUserId())
+                                    .Select(x=> _mapper.Map<TodoItemDTO>(x))
+                                    .ToListAsync();
         }
 
         // GET: api/TodoItems/5
@@ -59,7 +75,7 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            return ItemToDTO(todoItem);
+            return _mapper.Map<TodoItemDTO>(todoItem);
         }
 
         // PUT: api/TodoItems/5
@@ -94,16 +110,18 @@ namespace TodoApi.Controllers
         }
 
         // POST: api/TodoItems
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPost]
         public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItemDTO todoItemDTO)
         {
-            //Tạo todoItem để lưu trữ (từ todoItemDTO)
-            var todoItem = new TodoItem
-            {
-                IsComplete = todoItemDTO.IsComplete,
-                Name = todoItemDTO.Name
-            };
+            //Tạo todoItem thủ công để lưu trữ (từ todoItemDTO)
+            // var todoItem = new TodoItem
+            // {
+            //     IsComplete = todoItemDTO.IsComplete,
+            //     Name = todoItemDTO.Name
+            // };
+            var todoItem = _mapper.Map<TodoItem>(todoItemDTO);
+            // Lấy id của User hiện tại:
 
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
@@ -111,7 +129,7 @@ namespace TodoApi.Controllers
             return CreatedAtAction(
                 nameof(GetTodoItem),
                 new { id = todoItem.Id },
-                ItemToDTO(todoItem));
+                _mapper.Map<TodoItemDTO>(todoItem));
         }
 
         // DELETE: api/TodoItems/5
@@ -135,13 +153,13 @@ namespace TodoApi.Controllers
             return _context.TodoItems.Any(e => e.Id == id);
         }
 
-        //Chuyển TodoItem thành ItemToDTO
-        private static TodoItemDTO ItemToDTO(TodoItem todoItem) =>
-            new TodoItemDTO
-            {
-                Id = todoItem.Id,
-                Name = todoItem.Name,
-                IsComplete = todoItem.IsComplete
-            };
+        // //Chuyển TodoItem thành ItemToDTO thủ công, không cần dùng nữa
+        // private static TodoItemDTO ItemToDTO(TodoItem todoItem) =>
+        //     new TodoItemDTO
+        //     {
+        //         Id = todoItem.Id,
+        //         Name = todoItem.Name,
+        //         IsComplete = todoItem.IsComplete
+        //     };
     }
 }

@@ -51,7 +51,7 @@ namespace TodoApi
 
             //Configure AutoMapper (using AutoMapper)
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
+            
             //Configure Swagger
             #region Add Swagger
             services.AddSwaggerGen(c =>
