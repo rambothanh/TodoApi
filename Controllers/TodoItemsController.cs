@@ -67,11 +67,11 @@ namespace TodoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.Where(x => x.UserRefId == GetUserId() && x.Id == id).FirstAsync();
+            var todoItem = await TodoItemExists(id);
 
             if (todoItem == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Not Found" });
             }
 
             return _mapper.Map<TodoItemDTO>(todoItem);
@@ -85,14 +85,16 @@ namespace TodoApi.Controllers
             {
                 return BadRequest(new { message = "Wrong id" });
             }
-            var todoItemParam = _mapper.Map<TodoItem>(todoItemDTO);
-            todoItemParam.Id = id;
-            //Tìm todoItem theo id yêu cầu
-            var todoItem = await _context.TodoItems.Where(x => x.UserRefId == GetUserId() && x.Id == id).FirstAsync();
+            var todoItem = await TodoItemExists(id);
             if (todoItem == null)
             {
-                return NotFound(new { message = "Not found" });
+                return BadRequest(new { message = "Not Found" });
             }
+            var todoItemParam = _mapper.Map<TodoItem>(todoItemDTO);
+            //todoItemParam.Id = id;
+            //Tìm todoItem theo id yêu cầu
+            //var todoItem = await _context.TodoItems.Where(x => x.UserRefId == GetUserId() && x.Id == id).FirstAsync();
+            
             //Cập nhật data mới
             if (!string.IsNullOrWhiteSpace(todoItemParam.Name))
             {
@@ -145,7 +147,8 @@ namespace TodoApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.Where(x => x.UserRefId == GetUserId() && x.Id == id).FirstAsync();
+            var todoItem = await TodoItemExists(id);
+            //var todoItem = await _context.TodoItems.Where(x => x.UserRefId == GetUserId() && x.Id == id).FirstAsync();
             if (todoItem == null)
             {
                 return NotFound(new { message = "Not found" });
@@ -157,10 +160,28 @@ namespace TodoApi.Controllers
             return NoContent();
         }
 
-        //Dùng để bắt lỗi
-        private bool TodoItemExists(long id)
+        // Get Item dùng nội bộ, dùng cái này để gọi tới database 1 lần
+        // Vừa check và lấy data luôn
+        private async Task<TodoItem> TodoItemExists(long idTodoItem)
         {
-            return _context.TodoItems.Any(e => e.Id == id);
+            // Kiểm tra idTodoItem có chưa 
+            if (_context.TodoItems.Any(e => e.Id == idTodoItem))
+            {
+                // Lấy todo theo Id đã kiểm tra
+                var todoExist = await _context.TodoItems.FindAsync(idTodoItem);
+                //nêú đúng chủ nhân
+                 if(todoExist.UserRefId == GetUserId())
+                 {
+                    return todoExist;
+                 }
+                return null;
+            }
+            else
+            {
+                //Nếu không có ID trả về Null luôn
+                return null;
+            }
+            
         }
 
         // //Chuyển TodoItem thành ItemToDTO thủ công, không cần dùng nữa

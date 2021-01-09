@@ -13,7 +13,7 @@ namespace TodoApi.Models
         public DateTime? DateCreate {get;set;} = DateTime.UtcNow.AddHours(7);
         public DateTime? DateDue {get;set;}
         public string Name { get; set; }
-        public bool IsComplete { get; set; }
+        public bool IsComplete { get; set; } = false;
         [ForeignKey("User")]
         public int UserRefId { get; set; } =1;
         public User User { get; set; }
