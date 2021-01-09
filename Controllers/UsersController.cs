@@ -34,33 +34,48 @@ namespace TodoApi.Controllers
             _userService = userService;
             _appSettings = appSettings.Value;
         }
+        private void SeedAdmin(){
+            //Cập nhật Id 1 luôn là Admin ka ka
+            RegisterModel userSeed = new RegisterModel
+                {
+                    FirstName = "Thành",
+                    LastName = "Nguyễn Trọng",
+                    Username = "admin",
+                    Password = "string",
+                };
+            var user = GetUserById(1);
+            
+            if(user==null){
+                //Đăng ký User bình thường
+                Register(userSeed);
+                //Tạo UpdateModel để Set Role Admin
+                UpdateModel adminUserSeed = new UpdateModel
+                    {
+                        Role = Role.Admin
+                    };
+                //Set Role admin cho User 1
+                PutUser(1, adminUserSeed);
+            }else{
+                //Tạo UpdateModel mới để đè lên số 1
+                 UpdateModel adminUserSeed = new UpdateModel
+                    { 
+                        FirstName = "Thành",
+                        LastName = "Nguyễn Trọng",
+                        Username = "admin",
+                        Password = "string",
+                        Role = Role.Admin
+                    };
+                //Update lên mọi số 1:
+                PutUser(1, adminUserSeed);
+            }
+        }
 
         //POST: api/Users/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
-            #region Seed user
-
-           
-            RegisterModel userSeed = new RegisterModel
-            {
-                FirstName = "Thành",
-                LastName = "Nguyễn Trọng",
-                Username = "admin",
-                Password = "string",
-            };
-
-            UpdateModel adminUserSeed = new UpdateModel
-            {
-                Role = Role.Admin
-            };
-            
-            Register(userSeed);
-            // Set dmin
-            PutUser(1,adminUserSeed);
-
-            #endregion Seed admin user
+            SeedAdmin();
 
             var user = _userService.Authenticate(model.Username, model.Password);
 
@@ -138,6 +153,7 @@ namespace TodoApi.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterModel model)
         {
+            SeedAdmin();
             // map model to entity
             var user = _mapper.Map<User>(model);
 
