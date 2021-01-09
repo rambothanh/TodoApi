@@ -10,6 +10,8 @@ namespace TodoApi.Models
     public class TodoItem
     {
         public long Id { get; set; }
+        public DateTime? DateCreate {get;set;} = DateTime.UtcNow;
+        public DateTime? DateDue {get;set;}
         public string Name { get; set; }
         public bool IsComplete { get; set; }
         [ForeignKey("User")]

@@ -96,6 +96,7 @@ namespace TodoApi.Controllers
             //Cập nhật data mới
             todoItem.Name = todoItemDTO.Name;
             todoItem.IsComplete = todoItemDTO.IsComplete;
+            todoItem.DateDue = todoItemDTO.DateDue;
 
             try
             {
