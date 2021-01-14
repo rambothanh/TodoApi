@@ -15,8 +15,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TodoApi.Models;
+using TodoApi.Models.CrawlerModels;
 using TodoApi.Models.Helpers;
 using TodoApi.Services.UserService;
+
 
 namespace TodoApi
 {
@@ -39,6 +41,9 @@ namespace TodoApi
                 //Sử dụng Database trên bộ nhớ đệm
                 services.AddDbContext<TodoContext>(opt =>
                                             opt.UseInMemoryDatabase("TodoList"));
+                //Database của Project Crawler
+                services.AddDbContext<ClawlerContext>(opt =>
+                                        opt.UseInMemoryDatabase("VnExpress"));
             }
             else
             {
@@ -51,7 +56,7 @@ namespace TodoApi
 
             //Configure AutoMapper (using AutoMapper)
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            
+
             //Configure Swagger
             #region Add Swagger
             services.AddSwaggerGen(c =>
@@ -87,7 +92,7 @@ namespace TodoApi
                         new List<string>()
                     }
                 });
-                
+
             });
             #endregion 
 
@@ -153,7 +158,7 @@ namespace TodoApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TodoApi v1"));
             }
-            
+
             //xóa cái này để test Deploy
             //app.UseHttpsRedirection();
 
@@ -172,10 +177,10 @@ namespace TodoApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                
+
             });
 
-           
+
         }
     }
 }
