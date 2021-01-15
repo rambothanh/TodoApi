@@ -56,6 +56,10 @@ namespace TodoApi.Controllers
             return news;
         }
 
-
+         // GET: api/News/Cat
+        [HttpGet("GetCats")]
+        public async Task<ActionResult<List<Category>>> GetCats(){
+            return await _context.Categories.ToListAsync();
+        }
     }
 }
