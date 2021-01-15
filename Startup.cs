@@ -50,6 +50,10 @@ namespace TodoApi
                 //Sử dụng SQLite (để chắc ăn cần xóa Database và chạy Migration lại)
                 var connectionString = _configuration.GetConnectionString("LocalDataSQLite");
                 services.AddDbContext<TodoContext>(opt => opt.UseSqlite(connectionString));
+
+                //Database của Project Crawler
+                var VnExpressDb = _configuration.GetConnectionString("VnExpressDb");
+                services.AddDbContext<TodoContext>(opt => opt.UseSqlite(VnExpressDb));
             }
 
             services.AddControllers();
