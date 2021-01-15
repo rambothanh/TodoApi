@@ -34,6 +34,9 @@ namespace TodoApi.Models.CrawlerModels
     }
         public DbSet<News> Newss { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Content> Contents { get; set; }
+        public DbSet<ImageLink> ImageLinks { get; set; }
+        
             
     }
 }

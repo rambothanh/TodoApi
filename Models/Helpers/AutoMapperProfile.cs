@@ -1,5 +1,6 @@
 using AutoMapper;
 using TodoApi.Models.UserModels;
+using TodoApi.Models.CrawlerModels;
 
 namespace TodoApi.Models.Helpers
 {
@@ -7,11 +8,14 @@ namespace TodoApi.Models.Helpers
     {
         public AutoMapperProfile()
         {
+            //Phía trước là nguồn,phía sau là đích
             CreateMap<User, UserModel>();
             CreateMap<RegisterModel, User>();
             CreateMap<UpdateModel, User>();
             CreateMap<TodoItem, TodoItemDTO>();
              CreateMap<TodoItemDTO, TodoItem>();
+             CreateMap<News,NewsDTO>();
+             CreateMap<NewsDTO,News>();
         }
     }
 }

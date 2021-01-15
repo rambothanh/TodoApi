@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models.CrawlerModels;
+using AutoMapper;
 
 namespace TodoApi.Controllers
 {
@@ -14,17 +15,25 @@ namespace TodoApi.Controllers
     public class NewsController : ControllerBase
     {
         private readonly ClawlerContext _context;
+        private readonly IMapper _mapper;
 
-        public NewsController(ClawlerContext context)
+        public NewsController(ClawlerContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/News
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<News>>> GetNewss()
+        public async Task<ActionResult<List<News>>> GetNewss()
         {
-            return await _context.Newss.ToListAsync();
+            //
+            return await _context.Newss
+                            .Include(n => n.Category)
+                            .Include(n => n.Content)
+                            .Include(n => n.ImageLink)
+                            .AsSplitQuery()
+                            .ToListAsync();
         }
 
         // GET: api/News/5

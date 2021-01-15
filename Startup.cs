@@ -53,8 +53,14 @@ namespace TodoApi
 
                 //Database của Project Crawler
                 var VnExpressDb = _configuration.GetConnectionString("VnExpressDb");
-                services.AddDbContext<TodoContext>(opt => opt.UseSqlite(VnExpressDb));
+                services.AddDbContext<ClawlerContext>(opt => opt.UseSqlite(VnExpressDb));
             }
+
+            //Xử lý lỗi at System.Text.Json.ThrowHelper.ThrowJsonException_SerializerCycleDetected(Int32 maxDepth)
+            services.AddControllersWithViews()
+                            .AddNewtonsoftJson(options =>
+                            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                                                );
 
             services.AddControllers();
 
