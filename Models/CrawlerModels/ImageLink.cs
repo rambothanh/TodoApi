@@ -12,6 +12,7 @@ namespace TodoApi.Models.CrawlerModels
         public News News  {get;set;}
 
         public long Location { get; set; }
+         public string Captain { get; set; }
         
         
     }
