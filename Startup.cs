@@ -57,10 +57,8 @@ namespace TodoApi
             }
 
             //Xử lý lỗi at System.Text.Json.ThrowHelper.ThrowJsonException_SerializerCycleDetected(Int32 maxDepth)
-            services.AddControllersWithViews()
-                            .AddNewtonsoftJson(options =>
-                            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                                                );
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+                            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddControllers();
 
