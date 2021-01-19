@@ -5,6 +5,8 @@
 #### Admin user can calls to the API Users and Todos Ex: /api/Users
 #### User user can only calls to the API Todos Ex: /api/TodoItems
 #### POST /api/Users/authenticate, /api/Users/register allow Anonymous user calls to authenticate and register
+#### Distribute the news data in the database obtained by the [CrawlerVNexpress](https://github.com/rambothanh/CrawlerVNEXPRESS) project.
+
 ## Technology
 #### ASP .Net 5
 #### Entity Framework Core, Migratons
