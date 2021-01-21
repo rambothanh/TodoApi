@@ -24,31 +24,44 @@ namespace TodoApi.Controllers
         }
 
         // GET: api/News
-        [HttpGet("{skip}/{take}")]
-        public async Task<ActionResult<List<News>>> GetNewss(int skip, int take)
+        [HttpGet("{catId}/{skip}/{take}")]
+        public async Task<ActionResult<List<News>>> GetNewss(long catId, int skip, int take)
         {
 
-            //.AsSplitQuery() 
+            if (catId == 0)
+                //.AsSplitQuery() để tăng hiệu suất khi Include nhiều bảng
+                return await _context.Newss
+                                .OrderByDescending(x => x.Id)
+                                .Skip(skip)
+                                .Take(take)
+                                .Include(n => n.Category)
+                                .Include(n => n.Content)
+                                .Include(n => n.ImageLink)
+                                .AsSplitQuery()
+                                .ToListAsync();
+
             return await _context.Newss
-                            .OrderByDescending(x=>x.Id)
-                            .Skip(skip)
-                            .Take(take)
-                            .Include(n => n.Category)
-                            .Include(n => n.Content)
-                            .Include(n => n.ImageLink)
-                            .AsSplitQuery()
-                            .ToListAsync();
+                                .Where(x => x.CategoryRefId == catId)
+                                .OrderByDescending(x => x.Id)
+                                .Skip(skip)
+                                .Take(take)
+                                .Include(n => n.Category)
+                                .Include(n => n.Content)
+                                .Include(n => n.ImageLink)
+                                .AsSplitQuery()
+                                .ToListAsync();
         }
-        
+
         // GET: api/Count
         [HttpGet("count/{catId}")]
         public ActionResult<int> GetCount(long catId)
         {
-            if(catId==0){
+            if (catId == 0)
+            {
                 return _context.Newss.Count();
             }
-            return _context.Newss.Where(x=> x.CategoryRefId==catId).Count();
-            
+            return _context.Newss.Where(x => x.CategoryRefId == catId).Count();
+
         }
 
         // GET: api/News/5
@@ -61,19 +74,20 @@ namespace TodoApi.Controllers
                             .Include(n => n.Content)
                             .Include(n => n.ImageLink)
                             .AsSplitQuery()
-                            .Where(n => n.Id ==id)
+                            .Where(n => n.Id == id)
                             .FirstAsync();
             if (news == null)
             {
                 return NotFound();
             }
-            
+
             return news;
         }
 
-         // GET: api/News/Cat
+        // GET: api/News/Cat
         [HttpGet("GetCats")]
-        public async Task<ActionResult<List<Category>>> GetCats(){
+        public async Task<ActionResult<List<Category>>> GetCats()
+        {
             return await _context.Categories.ToListAsync();
         }
     }
