@@ -24,16 +24,31 @@ namespace TodoApi.Controllers
         }
 
         // GET: api/News
-        [HttpGet]
-        public async Task<ActionResult<List<News>>> GetNewss()
+        [HttpGet("{skip}/{take}")]
+        public async Task<ActionResult<List<News>>> GetNewss(int skip, int take)
         {
+
             //.AsSplitQuery() 
             return await _context.Newss
+                            .OrderByDescending(x=>x.Id)
+                            .Skip(skip)
+                            .Take(take)
                             .Include(n => n.Category)
                             .Include(n => n.Content)
                             .Include(n => n.ImageLink)
                             .AsSplitQuery()
                             .ToListAsync();
+        }
+        
+        // GET: api/Count
+        [HttpGet("count/{catId}")]
+        public ActionResult<int> GetCount(long catId)
+        {
+            if(catId==0){
+                return _context.Newss.Count();
+            }
+            return _context.Newss.Where(x=> x.CategoryRefId==catId).Count();
+            
         }
 
         // GET: api/News/5
