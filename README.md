@@ -16,7 +16,7 @@
 
 ## Demo:
 #### Link https://todoapi.sofsog.com/swagger/index.html
-##### Admin for test Feature: admin pass: admin.
+##### Admin for test Feature: admin pass: string.
 ##### User for test: user pass: string
 ##### How to test:
 POST https://todoapi.sofsog.com/api/Users/authenticate. 
